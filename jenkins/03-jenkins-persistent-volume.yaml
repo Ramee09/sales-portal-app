@@ -1,0 +1,31 @@
+---
+# PersistentVolume for Jenkins
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jenkins-pv
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: default
+  azureDisk:
+    kind: Managed
+    diskName: jenkins-disk
+    diskURI: "/subscriptions/{subscription-id}/resourceGroups/{resource-group}/providers/Microsoft.Compute/disks/jenkins-disk"
+
+---
+# PersistentVolumeClaim for Jenkins
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jenkins-pvc
+  namespace: jenkins
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: default
+  resources:
+    requests:
+      storage: 20Gi

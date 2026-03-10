@@ -1,0 +1,21 @@
+---
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sales-portal
+  labels:
+    name: sales-portal
+
+---
+# Storage Class for MongoDB
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: sales-portal-storage
+  namespace: sales-portal
+provisioner: kubernetes.io/azure-disk
+parameters:
+  storageaccounttype: Standard_LRS
+  kind: Managed
+allowVolumeExpansion: true

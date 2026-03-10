@@ -1,0 +1,23 @@
+---
+# ConfigMap for Jenkins Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jenkins-config
+  namespace: jenkins
+data:
+  jenkins.yaml: |
+    jenkins:
+      securityRealm:
+        local:
+          allowsSignup: false
+      authorizationStrategy:
+        projectMatrix:
+          permissions:
+            - "Overall/Administer:admin"
+            - "Overall/Read:authenticated"
+      remotingSecurity:
+        enabled: true
+    unclassified:
+      location:
+        url: "http://jenkins.jenkins.svc.cluster.local:8080/"
