@@ -3,7 +3,6 @@ pipeline {
     
     environment {
         // Azure & Registry
-        AZURE_SUBSCRIPTION_ID = credentials('azure-subscription-id')
         AZURE_RESOURCE_GROUP = 'sales-portal-rg'
         AZURE_AKS_NAME = 'sales-portal-aks'
         AZURE_AKS_REGION = 'eastus'
@@ -11,7 +10,6 @@ pipeline {
         // Container Registry
         REGISTRY_NAME = 'salesportalacr'
         REGISTRY_URL = "${REGISTRY_NAME}.azurecr.io"
-        REGISTRY_CREDS = credentials('azure-registry-credentials')
         
         // Application
         APP_NAME = 'sales-portal'
@@ -188,6 +186,7 @@ pipeline {
         stage('6. Push to ACR') {
             steps {
                 script {
+                    withCredentials([usernamePassword(credentialsId: 'azure-registry-credentials', usernameVariable: 'REGISTRY_USER', passwordVariable: 'REGISTRY_PASS')]) {
                     sh '''
                         echo ""
                         echo "  ╔═══════════════════════════════════════════════════════════╗"
@@ -205,13 +204,14 @@ pipeline {
                         echo "  ╚═══════════════════════════════════════════════════════════╝"
                         echo ""
                         echo "  Pushing to registry: ${REGISTRY_URL}"
-                        echo ${REGISTRY_CREDS_PSW} | docker login -u ${REGISTRY_CREDS_USR} --password-stdin ${REGISTRY_URL}
+                        echo ${REGISTRY_PASS} | docker login -u ${REGISTRY_USER} --password-stdin ${REGISTRY_URL}
                         docker push ${FULL_IMAGE}
                         docker push ${IMAGE_NAME}:latest
                         docker logout ${REGISTRY_URL}
                         echo "  ✓ Images pushed to ACR successfully"
                         echo ""
                     '''
+                    }
                 }
             }
         }
