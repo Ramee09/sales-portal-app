@@ -114,17 +114,19 @@ app.use((req, res) => {
 // Connect to database
 connectDB();
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`
-    ========================================
-    Sales Portal API Server Started
-    ========================================
-    Port:        ${PORT}
-    Environment: ${NODE_ENV}
-    Time:        ${new Date()}
-    ========================================
-  `);
-});
+// Start server only if this is the main module
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`
+      ========================================
+      Sales Portal API Server Started
+      ========================================
+      Port:        ${PORT}
+      Environment: ${NODE_ENV}
+      Time:        ${new Date()}
+      ========================================
+    `);
+  });
+}
 
 module.exports = app;
