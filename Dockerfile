@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm install --omit=dev
 
 # Copy source code
 COPY src ./src
@@ -28,6 +28,7 @@ RUN addgroup -g 1001 -S nodejs && \
 COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nodejs:nodejs /app/src ./src
 COPY --chown=nodejs:nodejs package*.json ./
+COPY --chown=nodejs:nodejs public ./public
 
 # Set user
 USER nodejs

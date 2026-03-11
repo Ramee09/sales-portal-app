@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar h1 {
+            color: #667eea;
+            font-size: 1.8rem;
+        }
+        
+        .status {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .status-badge {
+            background: #10b981;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #764ba2;
+        }
+        
+        .products-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .products-section h2 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+        }
+        
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .product-item {
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .product-item h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-item .price {
+            font-size: 1.3rem;
+            color: #10b981;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-item .category {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        .endpoints {
+            background: #f3f4f6;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .endpoints h3 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .endpoint-list {
+            list-style: none;
+        }
+        
+        .endpoint-list li {
+            padding: 0.5rem 0;
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .endpoint-list li code {
+            background: #e5e7eb;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+        }
+        
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            color: #666;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <h1>🛍️ Sales Portal</h1>
+            <div class="status">
+                <div class="status-badge" id="statusBadge">
+                    <span id="statusText">Connecting...</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <div class="card">
+                <h2>📊 Dashboard</h2>
+                <p>Welcome to the Sales Portal application running on Kubernetes.</p>
+                <p id="versionInfo">Version: Loading...</p>
+                <button class="btn" onclick="checkHealth()">Check Health</button>
+            </div>
+            
+            <div class="card">
+                <h2>🚀 Deployment</h2>
+                <p>This application is deployed on Azure Kubernetes Service (AKS).</p>
+                <p>Environment: <strong id="envInfo">Loading...</strong></p>
+                <button class="btn" onclick="loadEndpoints()">View API Endpoints</button>
+            </div>
+            
+            <div class="card">
+                <h2>💾 Database</h2>
+                <p>Connected to MongoDB for persistent data storage.</p>
+                <p>Status: <strong id="dbStatus">Checking...</strong></p>
+                <button class="btn" onclick="testConnection()">Test Connection</button>
+            </div>
+        </div>
+        
+        <div class="products-section">
+            <h2>📦 Featured Products</h2>
+            <div class="product-list" id="productsList">
+                <div class="loading">Loading products...</div>
+            </div>
+        </div>
+        
+        <div class="endpoints" id="endpointsSection" style="display: none;">
+            <h3>📡 API Endpoints</h3>
+            <ul class="endpoint-list" id="endpointsList"></ul>
+        </div>
+        
+        <div class="footer">
+            <p>Sales Portal © 2026 | Running on Azure AKS with MongoDB</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                🐳 Docker | ☸️ Kubernetes | ☁️ Azure | 🔄 Jenkins CI/CD
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = '';
+        
+        // Check API health on page load
+        window.addEventListener('load', () => {
+            checkHealth();
+            loadProducts();
+            loadVersion();
+        });
+        
+        function checkHealth() {
+            fetch(`${API_URL}/health`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('statusBadge').innerHTML = '✅ Connected';
+                    document.getElementById('statusBadge').style.background = '#10b981';
+                    document.getElementById('envInfo').textContent = data.env || 'production';
+                    document.getElementById('dbStatus').textContent = data.status === 'UP' ? '✅ Online' : '❌ Offline';
+                })
+                .catch(err => {
+                    document.getElementById('statusBadge').innerHTML = '❌ Disconnected';
+                    document.getElementById('statusBadge').style.background = '#ef4444';
+                    console.error('Health check failed:', err);
+                });
+        }
+        
+        function loadVersion() {
+            fetch(`${API_URL}/api`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('versionInfo').textContent = `Version: ${data.version || '1.0.0'}`;
+                })
+                .catch(err => console.error('Version load failed:', err));
+        }
+        
+        function loadProducts() {
+            fetch(`${API_URL}/api/products`)
+                .then(res => res.json())
+                .then(data => {
+                    const products = data.data || [];
+                    const productsList = document.getElementById('productsList');
+                    productsList.innerHTML = products.map(product => `
+                        <div class="product-item">
+                            <h3>${product.name}</h3>
+                            <div class="price">$${product.price.toFixed(2)}</div>
+                            <div class="category">📁 ${product.category}</div>
+                        </div>
+                    `).join('');
+                })
+                .catch(err => {
+                    document.getElementById('productsList').innerHTML = '<p style="grid-column: 1/-1; color: #ef4444;">Failed to load products</p>';
+                    console.error('Products load failed:', err);
+                });
+        }
+        
+        function loadEndpoints() {
+            fetch(`${API_URL}/api`)
+                .then(res => res.json())
+                .then(data => {
+                    const endpoints = data.endpoints || {};
+                    const endpointsList = document.getElementById('endpointsList');
+                    endpointsList.innerHTML = Object.entries(endpoints).map(([name, url]) => `
+                        <li><code>${url}</code> - ${name}</li>
+                    `).join('');
+                    document.getElementById('endpointsSection').style.display = 'block';
+                })
+                .catch(err => console.error('Endpoints load failed:', err));
+        }
+        
+        function testConnection() {
+            fetch(`${API_URL}/api/orders`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    alert(`✅ Connection successful!\n\nOrder ID: ${data.orderId}\nStatus: ${data.status}`);
+                })
+                .catch(err => {
+                    alert('❌ Connection failed. Check console for details.');
+                    console.error('Connection test failed:', err);
+                });
+        }
+        
+        // Refresh status every 30 seconds
+        setInterval(checkHealth, 30000);
+    </script>
+</body>
+</html>
