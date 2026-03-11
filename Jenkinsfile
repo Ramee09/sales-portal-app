@@ -22,10 +22,9 @@ pipeline {
         // Kubernetes
         K8S_NAMESPACE = 'sales-portal'
         K8S_DEPLOYMENT = 'sales-portal-app'
-        KUBECONFIG = credentials('kubeconfig-file')
         
         // Git
-        GIT_REPO = 'https://github.com/YOUR_USERNAME/sales-portal.git'
+        GIT_REPO = 'https://github.com/Ramee09/sales-portal-app.git'
         GIT_BRANCH = 'main'
     }
     
@@ -220,6 +219,7 @@ pipeline {
         stage('7. Create K8s Namespace') {
             steps {
                 script {
+                    withCredentials([file(credentialsId: 'kubeconfig-file', variable: 'KUBECONFIG')]) {
                     sh '''
                         echo ""
                         echo "  ╔═══════════════════════════════════════════════════════════╗"
@@ -242,6 +242,7 @@ pipeline {
                         kubectl get namespace ${K8S_NAMESPACE}
                         echo ""
                     '''
+                    }
                 }
             }
         }
@@ -249,6 +250,7 @@ pipeline {
         stage('8. Deploy to AKS') {
             steps {
                 script {
+                    withCredentials([file(credentialsId: 'kubeconfig-file', variable: 'KUBECONFIG')]) {
                     sh '''
                         echo ""
                         echo "  ╔═══════════════════════════════════════════════════════════╗"
@@ -277,6 +279,7 @@ pipeline {
                         echo "  ✓ Deployment updated"
                         echo ""
                     '''
+                    }
                 }
             }
         }
@@ -284,6 +287,7 @@ pipeline {
         stage('9. Wait for Rollout') {
             steps {
                 script {
+                    withCredentials([file(credentialsId: 'kubeconfig-file', variable: 'KUBECONFIG')]) {
                     sh '''
                         echo ""
                         echo "  ╔═══════════════════════════════════════════════════════════╗"
@@ -308,6 +312,7 @@ pipeline {
                         echo "  ✓ Deployment rolled out successfully"
                         echo ""
                     '''
+                    }
                 }
             }
         }
@@ -315,6 +320,7 @@ pipeline {
         stage('10. Smoke Tests') {
             steps {
                 script {
+                    withCredentials([file(credentialsId: 'kubeconfig-file', variable: 'KUBECONFIG')]) {
                     sh '''
                         echo ""
                         echo "  ╔═══════════════════════════════════════════════════════════╗"
@@ -343,6 +349,7 @@ pipeline {
                         echo "  ✓ All pods are running"
                         echo ""
                     '''
+                    }
                 }
             }
         }
@@ -350,6 +357,7 @@ pipeline {
         stage('11. Verify Health') {
             steps {
                 script {
+                    withCredentials([file(credentialsId: 'kubeconfig-file', variable: 'KUBECONFIG')]) {
                     sh '''
                         echo ""
                         echo "  ╔═══════════════════════════════════════════════════════════╗"
@@ -373,6 +381,7 @@ pipeline {
                         echo "  ✓ Application health verified"
                         echo ""
                     '''
+                    }
                 }
             }
         }
@@ -432,7 +441,13 @@ pipeline {
     
     post {
         always {
-            sh 'docker logout ${REGISTRY_URL} || true'
+            script {
+                if (getContext(hudson.FilePath)) {
+                    sh 'docker logout ${REGISTRY_URL} || true'
+                } else {
+                    echo 'Skipping docker logout because no workspace context is available.'
+                }
+            }
         }
         success {
             echo "========== Build Successful =========="
